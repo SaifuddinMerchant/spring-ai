@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game Guide</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #17201d;
+            background: #f3efe4;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background:
+                radial-gradient(circle at top left, rgba(222, 101, 73, .18), transparent 32rem),
+                radial-gradient(circle at bottom right, rgba(29, 104, 85, .18), transparent 28rem),
+                #f3efe4;
+        }
+
+        main {
+            width: min(920px, calc(100% - 2rem));
+            min-height: 100vh;
+            margin: auto;
+            padding: 2.5rem 0;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 1.25rem;
+        }
+
+        header { display: flex; align-items: center; gap: 1rem; }
+
+        .mark {
+            width: 3.25rem;
+            height: 3.25rem;
+            display: grid;
+            place-items: center;
+            border-radius: 1rem;
+            background: #df5f43;
+            color: white;
+            font-size: 1.65rem;
+            box-shadow: 0 8px 20px rgba(132, 52, 34, .2);
+        }
+
+        h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2.15rem); letter-spacing: -.04em; }
+        header p { margin: .2rem 0 0; color: #63706b; }
+
+        .chat {
+            min-height: 480px;
+            padding: clamp(1rem, 3vw, 2rem);
+            overflow-y: auto;
+            border: 1px solid rgba(35, 64, 55, .12);
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, .76);
+            box-shadow: 0 18px 50px rgba(55, 47, 32, .09);
+        }
+
+        .welcome { max-width: 620px; margin: 3rem auto; text-align: center; }
+        .welcome h2 { margin-bottom: .6rem; font-size: clamp(1.4rem, 4vw, 2rem); }
+        .welcome p { color: #63706b; line-height: 1.6; }
+
+        .suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem; margin-top: 1.5rem; }
+
+        .suggestion {
+            padding: .7rem .9rem;
+            border: 1px solid #cfd7d2;
+            border-radius: 999px;
+            background: white;
+            color: #285746;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .suggestion:hover, .suggestion:focus-visible { border-color: #28725a; background: #eff8f4; }
+
+        .message { display: flex; margin: 0 0 1rem; }
+        .message.user { justify-content: flex-end; }
+        .bubble { max-width: min(78%, 660px); padding: .85rem 1rem; border-radius: 1rem; line-height: 1.55; white-space: pre-wrap; }
+        .assistant .bubble { background: #edf1ee; border-bottom-left-radius: .25rem; }
+        .user .bubble { background: #286c57; color: white; border-bottom-right-radius: .25rem; }
+        .status { color: #63706b; font-style: italic; }
+
+        form {
+            display: flex;
+            gap: .75rem;
+            padding: .75rem;
+            border: 1px solid rgba(35, 64, 55, .15);
+            border-radius: 1.25rem;
+            background: white;
+            box-shadow: 0 12px 30px rgba(55, 47, 32, .1);
+        }
+
+        textarea {
+            flex: 1;
+            min-height: 48px;
+            max-height: 140px;
+            padding: .75rem;
+            resize: vertical;
+            border: 0;
+            outline: 0;
+            font: inherit;
+            line-height: 1.4;
+        }
+
+        .send {
+            align-self: end;
+            min-width: 5.5rem;
+            height: 48px;
+            border: 0;
+            border-radius: .85rem;
+            background: #df5f43;
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+        }
+
+        .send:hover { background: #c94f35; }
+        .send:disabled { cursor: wait; opacity: .6; }
+        .hint { margin: .55rem 0 0; text-align: center; color: #78827e; font-size: .8rem; }
+
+        @media (max-width: 600px) {
+            main { width: min(100% - 1rem, 920px); padding: 1rem 0; }
+            .chat { min-height: 420px; border-radius: 1rem; }
+            .bubble { max-width: 90%; }
+            header p { display: none; }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <header>
+        <div class="mark" aria-hidden="true">♟</div>
+        <div>
+            <h1>Game Guide</h1>
+            <p>Rules, strategy, and the right game for your table.</p>
+        </div>
+    </header>
+
+    <section id="chat" class="chat" aria-live="polite" aria-label="Conversation">
+        <div id="welcome" class="welcome">
+            <h2>What are we playing?</h2>
+            <p>Ask about a rule, settle a table dispute, get a strategy tip, or find your group’s next favorite game.</p>
+            <div class="suggestions" aria-label="Suggested questions">
+                <button class="suggestion" type="button">Can I stack Draw Two cards in UNO?</button>
+                <button class="suggestion" type="button">Teach me Splendor in 2 minutes</button>
+                <button class="suggestion" type="button">Suggest a strategy game for 2 people</button>
+            </div>
+        </div>
+    </section>
+
+    <div>
+        <form id="chat-form">
+            <label for="prompt" hidden>Ask a game question</label>
+            <textarea id="prompt" name="prompt" rows="1" maxlength="2000" required
+                      placeholder="Ask a question about a game..."></textarea>
+            <button id="send" class="send" type="submit">Send</button>
+        </form>
+        <p class="hint">Enter to send · Shift + Enter for a new line</p>
+    </div>
+</main>
+
+<script>
+    const form = document.querySelector('#chat-form');
+    const promptInput = document.querySelector('#prompt');
+    const chat = document.querySelector('#chat');
+    const sendButton = document.querySelector('#send');
+    const conversationId = sessionStorage.getItem('game-guide-conversation-id') || crypto.randomUUID();
+    sessionStorage.setItem('game-guide-conversation-id', conversationId);
+
+    function addMessage(text, role, extraClass = '') {
+        document.querySelector('#welcome')?.remove();
+        const message = document.createElement('div');
+        message.className = `message ${role} ${extraClass}`;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = text;
+        message.appendChild(bubble);
+        chat.appendChild(message);
+        chat.scrollTop = chat.scrollHeight;
+        return message;
+    }
+
+    async function ask(question) {
+        const prompt = question.trim();
+        if (!prompt || sendButton.disabled) return;
+
+        addMessage(prompt, 'user');
+        promptInput.value = '';
+        sendButton.disabled = true;
+        const pending = addMessage('Thinking through the rules…', 'assistant', 'status');
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, conversationId })
+            });
+            const body = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(body.message || 'The game expert could not answer right now.');
+            pending.remove();
+            addMessage(body.response || 'I could not generate an answer.', 'assistant');
+        } catch (error) {
+            pending.remove();
+            addMessage(error.message || 'Something went wrong. Please try again.', 'assistant', 'status');
+        } finally {
+            sendButton.disabled = false;
+            promptInput.focus();
+        }
+    }
+
+    form.addEventListener('submit', event => {
+        event.preventDefault();
+        ask(promptInput.value);
+    });
+
+    promptInput.addEventListener('keydown', event => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            form.requestSubmit();
+        }
+    });
+
+    document.querySelectorAll('.suggestion').forEach(button => {
+        button.addEventListener('click', () => ask(button.textContent));
+    });
+</script>
+</body>
+</html>

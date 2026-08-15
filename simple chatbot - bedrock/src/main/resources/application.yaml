@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: simple-chatbot
+  ai:
+    bedrock:
+      aws:
+        region: ${AWS_REGION:us-east-1}
+      converse:
+        chat:
+          model: ${BEDROCK_MODEL_ID:us.amazon.nova-2-lite-v1:0}
+          max-tokens: ${BEDROCK_MAX_TOKENS:4096}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
