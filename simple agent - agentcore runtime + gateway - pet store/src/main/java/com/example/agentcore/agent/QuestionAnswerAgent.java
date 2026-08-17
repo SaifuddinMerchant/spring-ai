@@ -21,7 +21,7 @@ public class QuestionAnswerAgent {
                 .user(request.prompt())
                 .advisors(advisor -> advisor.param(
                         ChatMemory.CONVERSATION_ID,
-                        request.conversationId()))
+                        request.sessionId()))
                 .call()
                 .content();
     }

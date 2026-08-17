@@ -1,12 +1,16 @@
 package com.example.agentcore.request;
 
-import org.apache.commons.lang3.Validate;
-import org.springframework.lang.NonNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record InvocationRequest(@NonNull String prompt, @NonNull String conversationId) {
+import java.util.Objects;
+import java.util.UUID;
+
+public record InvocationRequest(String prompt, @JsonProperty("session_id") String sessionId) {
 
     public InvocationRequest {
-        Validate.notBlank(prompt, "prompt must not be blank");
-        Validate.notBlank(conversationId, "conversationId must not be blank");
+        Objects.requireNonNull(prompt, "prompt must not be null");
+        if (sessionId == null) {
+            sessionId = UUID.randomUUID().toString();
+        }
     }
 }

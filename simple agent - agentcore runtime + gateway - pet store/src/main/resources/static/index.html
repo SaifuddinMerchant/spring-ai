@@ -262,7 +262,7 @@
     const sendButton = document.querySelector('#send');
     const messages = document.querySelector('#messages');
     const welcome = document.querySelector('#welcome');
-    const conversationId = getConversationId();
+    const sessionId = getSessionId();
 
     document.querySelectorAll('.suggestion').forEach(button => {
         button.addEventListener('click', () => {
@@ -295,7 +295,7 @@
             const response = await fetch('/invocations', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({prompt, conversationId})
+                body: JSON.stringify({prompt, session_id: sessionId})
             });
 
             const body = await response.text();
@@ -362,8 +362,8 @@
         promptInput.style.height = `${Math.min(promptInput.scrollHeight, 150)}px`;
     }
 
-    function getConversationId() {
-        const storageKey = 'pet-store-conversation-id';
+    function getSessionId() {
+        const storageKey = 'pet-store-session-id';
         let id = sessionStorage.getItem(storageKey);
         if (!id) {
             id = crypto.randomUUID();
