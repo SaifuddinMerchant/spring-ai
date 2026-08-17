@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pet Store Assistant</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #18332c;
+            --muted: #64756f;
+            --paper: #fffdf7;
+            --surface: #ffffff;
+            --accent: #e96f45;
+            --accent-dark: #c8512c;
+            --agent: #edf6f0;
+            --line: #dbe6df;
+            --shadow: 0 18px 50px rgba(30, 70, 56, 0.13);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            color: var(--ink);
+            background:
+                    radial-gradient(circle at 12% 12%, rgba(242, 184, 112, 0.28), transparent 28rem),
+                    radial-gradient(circle at 88% 88%, rgba(92, 155, 127, 0.22), transparent 28rem),
+                    var(--paper);
+            font-family: Inter, ui-rounded, "Segoe UI", system-ui, sans-serif;
+        }
+
+        .chat {
+            width: min(880px, 100%);
+            height: min(820px, calc(100vh - 48px));
+            min-height: 560px;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            overflow: hidden;
+            border: 1px solid rgba(24, 51, 44, 0.1);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 22px 26px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .mark {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border-radius: 16px;
+            color: white;
+            background: var(--accent);
+            font-size: 25px;
+            transform: rotate(-3deg);
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.35rem, 3vw, 1.8rem);
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        #messages {
+            overflow-y: auto;
+            padding: 28px;
+            scroll-behavior: smooth;
+        }
+
+        .welcome {
+            max-width: 570px;
+            margin: 9vh auto 0;
+            text-align: center;
+        }
+
+        .welcome h2 {
+            margin: 0 0 10px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.7rem, 5vw, 2.6rem);
+            font-weight: 500;
+        }
+
+        .welcome p {
+            margin: 0 auto 24px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 9px;
+        }
+
+        .suggestion {
+            padding: 9px 13px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--ink);
+            background: var(--surface);
+            cursor: pointer;
+            font: inherit;
+            font-size: 0.88rem;
+        }
+
+        .suggestion:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+        }
+
+        .message {
+            width: fit-content;
+            max-width: min(680px, 88%);
+            margin: 0 0 16px;
+            padding: 13px 16px;
+            border-radius: 18px;
+            line-height: 1.55;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .message.user {
+            margin-left: auto;
+            color: white;
+            background: var(--ink);
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.agent {
+            background: var(--agent);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.error {
+            color: #7c2d1c;
+            background: #fff0eb;
+        }
+
+        .typing span {
+            display: inline-block;
+            animation: bounce 1s infinite ease-in-out;
+        }
+
+        .typing span:nth-child(2) { animation-delay: 0.14s; }
+        .typing span:nth-child(3) { animation-delay: 0.28s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            padding: 18px;
+            border-top: 1px solid var(--line);
+            background: rgba(255, 253, 247, 0.88);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 52px;
+            max-height: 150px;
+            resize: none;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 17px;
+            outline: none;
+            color: var(--ink);
+            background: white;
+            font: inherit;
+            line-height: 1.4;
+        }
+
+        textarea:focus {
+            border-color: #70a28d;
+            box-shadow: 0 0 0 3px rgba(112, 162, 141, 0.15);
+        }
+
+        .send {
+            align-self: end;
+            min-width: 92px;
+            height: 52px;
+            border: 0;
+            border-radius: 17px;
+            color: white;
+            background: var(--accent);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+        }
+
+        .send:hover:not(:disabled) { background: var(--accent-dark); }
+        .send:disabled { cursor: wait; opacity: 0.55; }
+
+        @media (max-width: 600px) {
+            body { padding: 0; }
+            .chat { height: 100vh; min-height: 100vh; border: 0; border-radius: 0; }
+            header, #messages { padding-left: 18px; padding-right: 18px; }
+            form { grid-template-columns: 1fr; }
+            .send { width: 100%; }
+            .welcome { margin-top: 5vh; }
+        }
+    </style>
+</head>
+<body>
+<main class="chat">
+    <header>
+        <div class="mark" aria-hidden="true">🐾</div>
+        <div>
+            <h1>Pet Store Assistant</h1>
+            <p>Store listings from live tools · General pet-care guidance</p>
+        </div>
+    </header>
+
+    <section id="messages" aria-live="polite">
+        <div class="welcome" id="welcome">
+            <h2>How can I help your pet search?</h2>
+            <p>Ask about pets currently in the store or get general guidance about food, care, and living environments.</p>
+            <div class="suggestions">
+                <button class="suggestion" type="button">Which pets are available?</button>
+                <button class="suggestion" type="button">Do you have any dogs?</button>
+                <button class="suggestion" type="button">What environment do rabbits prefer?</button>
+            </div>
+        </div>
+    </section>
+
+    <form id="chat-form">
+        <textarea id="prompt" rows="1" placeholder="Ask about pets..." aria-label="Message" required></textarea>
+        <button class="send" id="send" type="submit">Send</button>
+    </form>
+</main>
+
+<script>
+    const form = document.querySelector('#chat-form');
+    const promptInput = document.querySelector('#prompt');
+    const sendButton = document.querySelector('#send');
+    const messages = document.querySelector('#messages');
+    const welcome = document.querySelector('#welcome');
+    const conversationId = getConversationId();
+
+    document.querySelectorAll('.suggestion').forEach(button => {
+        button.addEventListener('click', () => {
+            promptInput.value = button.textContent;
+            promptInput.focus();
+        });
+    });
+
+    promptInput.addEventListener('input', resizePrompt);
+    promptInput.addEventListener('keydown', event => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            form.requestSubmit();
+        }
+    });
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const prompt = promptInput.value.trim();
+        if (!prompt || sendButton.disabled) return;
+
+        welcome?.remove();
+        addMessage(prompt, 'user');
+        promptInput.value = '';
+        resizePrompt();
+        setBusy(true);
+        const typing = addTypingIndicator();
+
+        try {
+            const response = await fetch('/invocations', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({prompt, conversationId})
+            });
+
+            const body = await response.text();
+            if (!response.ok) {
+                throw new Error(readError(body) || `Request failed (${response.status})`);
+            }
+
+            addMessage(readResponse(body), 'agent');
+        } catch (error) {
+            addMessage(`I couldn't reach the agent. ${error.message}`, 'agent error');
+        } finally {
+            typing.remove();
+            setBusy(false);
+            promptInput.focus();
+        }
+    });
+
+    function readResponse(body) {
+        if (!body) return 'The agent returned an empty response.';
+        try {
+            const parsed = JSON.parse(body);
+            return typeof parsed === 'string' ? parsed : parsed.content ?? parsed.message ?? JSON.stringify(parsed, null, 2);
+        } catch {
+            return body;
+        }
+    }
+
+    function readError(body) {
+        try {
+            const parsed = JSON.parse(body);
+            return parsed.message ?? parsed.error ?? body;
+        } catch {
+            return body;
+        }
+    }
+
+    function addMessage(text, className) {
+        const message = document.createElement('div');
+        message.className = `message ${className}`;
+        message.textContent = text;
+        messages.appendChild(message);
+        messages.scrollTop = messages.scrollHeight;
+        return message;
+    }
+
+    function addTypingIndicator() {
+        const typing = document.createElement('div');
+        typing.className = 'message agent typing';
+        typing.setAttribute('aria-label', 'Assistant is responding');
+        typing.innerHTML = '<span>●</span> <span>●</span> <span>●</span>';
+        messages.appendChild(typing);
+        messages.scrollTop = messages.scrollHeight;
+        return typing;
+    }
+
+    function setBusy(busy) {
+        sendButton.disabled = busy;
+        promptInput.disabled = busy;
+        sendButton.textContent = busy ? 'Thinking…' : 'Send';
+    }
+
+    function resizePrompt() {
+        promptInput.style.height = 'auto';
+        promptInput.style.height = `${Math.min(promptInput.scrollHeight, 150)}px`;
+    }
+
+    function getConversationId() {
+        const storageKey = 'pet-store-conversation-id';
+        let id = sessionStorage.getItem(storageKey);
+        if (!id) {
+            id = crypto.randomUUID();
+            sessionStorage.setItem(storageKey, id);
+        }
+        return id;
+    }
+</script>
+</body>
+</html>

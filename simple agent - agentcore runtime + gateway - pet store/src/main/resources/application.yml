@@ -1,0 +1,30 @@
+server:
+  address: 0.0.0.0
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: pet-store-agent
+  ai:
+    model:
+      chat: bedrock-converse
+    bedrock:
+      aws:
+        region: ${AWS_REGION:us-east-1}
+      converse:
+        chat:
+          model: ${BEDROCK_MODEL_ID:us.amazon.nova-2-lite-v1:0}
+    mcp:
+      client:
+        type: SYNC
+        request-timeout: 30s
+        streamable-http:
+          connections:
+            pet-store:
+              url: ${PET_STORE_GATEWAY_URL:https://gateway-pet-store-001-xqthfltnal.gateway.bedrock-agentcore.us-east-1.amazonaws.com}
+              endpoint: /mcp
+
+logging:
+  level:
+    root: INFO
