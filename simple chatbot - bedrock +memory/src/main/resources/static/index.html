@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Spring AI Memory Chatbot</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 760px; margin: 3rem auto; padding: 0 1rem; background: #f6f7f9; }
+        main { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 18px #0001; }
+        #messages { min-height: 280px; margin: 1rem 0; }
+        .message { padding: .75rem 1rem; margin: .6rem 0; border-radius: 10px; white-space: pre-wrap; }
+        .user { background: #dbeafe; margin-left: 15%; }
+        .assistant { background: #ecfdf5; margin-right: 15%; }
+        form { display: flex; gap: .5rem; }
+        input { flex: 1; padding: .8rem; }
+        button { padding: .8rem 1.2rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Spring AI Memory Chatbot</h1>
+    <p>Messages in this browser tab share one AgentCore short-term memory session.</p>
+    <div id="messages"></div>
+    <form id="chat-form">
+        <input id="prompt" autocomplete="off" placeholder="Type a message..." required>
+        <button>Send</button>
+    </form>
+</main>
+<script>
+    const actorId = localStorage.getItem('actorId') || crypto.randomUUID();
+    localStorage.setItem('actorId', actorId);
+    const sessionId = sessionStorage.getItem('sessionId') || crypto.randomUUID();
+    sessionStorage.setItem('sessionId', sessionId);
+    const form = document.querySelector('#chat-form');
+    const prompt = document.querySelector('#prompt');
+    const messages = document.querySelector('#messages');
+
+    function addMessage(text, role) {
+        const element = document.createElement('div');
+        element.className = `message ${role}`;
+        element.textContent = text;
+        messages.append(element);
+    }
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const text = prompt.value;
+        prompt.value = '';
+        addMessage(text, 'user');
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({prompt: text, actorId, sessionId})
+        });
+        const body = await response.json();
+        addMessage(response.ok ? body.response : 'The request failed.', 'assistant');
+    });
+</script>
+</body>
+</html>

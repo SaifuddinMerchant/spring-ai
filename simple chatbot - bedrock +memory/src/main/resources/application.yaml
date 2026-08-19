@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: simple-chatbot
+  ai:
+    bedrock:
+      aws:
+        region: ${AWS_REGION:us-east-1}
+      converse:
+        chat:
+          model: ${BEDROCK_MODEL_ID:us.amazon.nova-2-lite-v1:0}
+          temperature: 0.7
+
+agentcore:
+  memory:
+    memory-id: ${AGENTCORE_MEMORY_ID}
+    long-term:
+      auto-discovery: true
+    short-term:
+      total-events-limit: 10
+      default-session: default-session
+      page-size: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
