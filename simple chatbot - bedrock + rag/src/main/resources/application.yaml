@@ -2,8 +2,6 @@ spring:
   application:
     name: simple-chatbot
   ai:
-    model:
-      embedding: bedrock-titan
     bedrock:
       aws:
         region: ${AWS_REGION:us-east-1}
@@ -11,10 +9,10 @@ spring:
         chat:
           model: ${BEDROCK_MODEL_ID:us.amazon.nova-2-lite-v1:0}
           max-tokens: ${BEDROCK_MAX_TOKENS:4096}
-      titan:
-        embedding:
-          model: ${BEDROCK_EMBEDDING_MODEL_ID:amazon.titan-embed-text-v2:0}
-          input-type: text
+    vectorstore:
+      bedrock-knowledge-base:
+        knowledge-base-id: W7WFYSCTTF
+        top-k: 5
 
 management:
   endpoints:

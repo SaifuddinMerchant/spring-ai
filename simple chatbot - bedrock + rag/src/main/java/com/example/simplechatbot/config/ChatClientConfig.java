@@ -24,10 +24,10 @@ public class ChatClientConfig {
                 .build();
     }
 
-    @Bean
-    VectorStore vectorStore(EmbeddingModel embeddingModel) {
-        return SimpleVectorStore.builder(embeddingModel).build();
-    }
+//    @Bean
+//    VectorStore vectorStore(EmbeddingModel embeddingModel) {
+//        return SimpleVectorStore.builder(embeddingModel).build();
+//    }
 
     @Bean
     ChatClient chatClient(
@@ -37,7 +37,7 @@ public class ChatClientConfig {
             @Value("classpath:prompts/game-expert-system-prompt.txt") Resource systemPrompt) {
         Advisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
         Advisor customGameRulesAdvisor = QuestionAnswerAdvisor.builder(vectorStore).build();
-
+        System.out.println(vectorStore);
         return builder
                 .defaultSystem(systemPrompt)
                 .defaultAdvisors(memoryAdvisor, customGameRulesAdvisor)

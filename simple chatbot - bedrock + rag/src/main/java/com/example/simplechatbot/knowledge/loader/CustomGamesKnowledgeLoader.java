@@ -18,7 +18,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-@Component
+/**
+ * This class is no longer required since KB entries are retrieved from Amazon Bedrock Knowledge Base
+ * So we don't need to manually parse and load the knowledge base
+ */
+//@Component
 @RequiredArgsConstructor
 @Slf4j
 public class CustomGamesKnowledgeLoader implements ApplicationRunner {
