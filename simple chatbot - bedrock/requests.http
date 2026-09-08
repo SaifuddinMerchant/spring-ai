@@ -1,5 +1,14 @@
-### Chat
+### Local Chat Invocation
 POST http://localhost:8080/api/chat
+Content-Type: application/json
+
+{
+  "prompt": "What happens when someone cannot buy a card in Splendor?",
+  "sessionId": "demo-conversation"
+}
+
+### Lambda Invocation
+POST https://<lambda.url>
 Content-Type: application/json
 
 {

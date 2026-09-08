@@ -28,7 +28,7 @@ Use the following technologies unless explicitly instructed otherwise:
 * Store prompts under `src/main/resources/prompts`.
 * Use Spring AI abstractions (`ChatClient`, Advisors, Tools) instead of provider-specific SDKs whenever possible.
 * Keep provider-specific code isolated to configuration or adapter classes.
-* Use `application.yaml` for configuration.
+* Use `application.yml` for configuration.
 * Keep secrets in environment variables; never commit API keys.
 
 ## Testing

@@ -22,7 +22,7 @@ User question
 
 ## Prerequisites
 
-- Java 25
+- Java 21
 - Maven 3.9 or later
 - An AWS account with access to Amazon Bedrock
 
@@ -59,6 +59,12 @@ Example response:
 The Actuator health endpoint is available at `GET /actuator/health`.
 
 Send the same `conversationId` in later requests to continue that conversation. Use a different ID to begin an independent conversation.
+
+## Deploy as an AWS Lambda Function URL
+
+`mvn package` also produces `target/simple-chatbot-0.0.1-SNAPSHOT-lambda.jar`, an AWS Lambda deployment artifact. Upload that JAR to a Java 21 Lambda function, configure the handler as `com.example.simplechatbot.lambda.ChatLambdaHandler::handleRequest`, and create a Function URL.
+
+The Function URL accepts a `POST` request with the same JSON payload as the REST service and returns the same `{"response":"..."}` body. Configure its execution role with the Bedrock permissions described in [AWS setup](docs/aws-setup.md). The static page remains served by the Spring Boot application and continues to call `/api/chat`.
 
 ## Build and test
 

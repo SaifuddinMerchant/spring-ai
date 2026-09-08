@@ -15,12 +15,12 @@ public class ChatService {
 
     private final ChatClient chatClient;
 
-    public String chat(String prompt, String conversationId) {
-        log.info("Sending prompt for conversation: {}", conversationId);
+    public String chat(String prompt, String sessionId) {
+        log.info("Sending prompt for sessionId: {}", sessionId);
 
         String response = chatClient.prompt()
                 .user(prompt)
-                .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, conversationId))
+                .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, sessionId))
                 .call()
                 .content();
 
