@@ -1,0 +1,4 @@
+pet-store-agent:
+  runtime-arn: ${PET_STORE_AGENT_RUNTIME_ARN:arn:aws:bedrock-agentcore:us-east-1:884457518744:runtime/pet_store_agent-yJ97EYCWtp}
+  region: ${AWS_REGION:us-east-1}
+  endpoint-override: ${PET_STORE_AGENT_ENDPOINT_OVERRIDE:}
