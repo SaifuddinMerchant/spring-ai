@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.example.petstore.dto.AgentPrompt;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import software.amazon.awssdk.core.SdkBytes;
@@ -15,6 +16,7 @@ import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntime
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PetStoreAgentService {
@@ -29,7 +31,7 @@ public class PetStoreAgentService {
         if (!StringUtils.hasText(question)) {
             throw new IllegalArgumentException("The input field 'question' must not be blank.");
         }
-
+        log.info("Question asked: {}", question);
         var request = InvokeAgentRuntimeRequest.builder()
                 .agentRuntimeArn(properties.runtimeArn())
                 .runtimeSessionId(UUID.randomUUID().toString())
@@ -38,8 +40,9 @@ public class PetStoreAgentService {
                 .payload(SdkBytes.fromUtf8String(toAgentPayload(question)))
                 .build();
 
-        ResponseBytes<InvokeAgentRuntimeResponse> response = agentCoreClient.invokeAgentRuntimeAsBytes(request);
-        return response.asUtf8String();
+        String response = agentCoreClient.invokeAgentRuntimeAsBytes(request).asUtf8String();
+        log.info("Response from agent is: {}", response);
+        return response;
     }
 
     private String toAgentPayload(String question) {
