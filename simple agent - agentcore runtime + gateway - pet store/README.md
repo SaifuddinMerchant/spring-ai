@@ -62,7 +62,9 @@ Requests with the same `conversationId` share a bounded, in-memory conversation 
 The AgentCore runtime starter supplies the `/invocations` and `/ping` endpoints. The
 `@AgentCoreInvocation` method on `QuestionAnswerAgent` handles invocation requests.
 
-Override the defaults with `AWS_REGION` and `BEDROCK_MODEL_ID`.
+Override the defaults with `AWS_REGION` and `BEDROCK_MODEL_ID`. Configure the required
+Bedrock guardrail with `BEDROCK_GUARDRAIL_ID`; use `BEDROCK_GUARDRAIL_VERSION` to override
+the default `DRAFT` version.
 
 ## Test
 

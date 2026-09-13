@@ -28,3 +28,9 @@ spring:
 logging:
   level:
     root: INFO
+
+app:
+  bedrock:
+    guardrail:
+      identifier: ${BEDROCK_GUARDRAIL_ID:o3r4s6ip9p3n}
+      version: ${BEDROCK_GUARDRAIL_VERSION:DRAFT}
