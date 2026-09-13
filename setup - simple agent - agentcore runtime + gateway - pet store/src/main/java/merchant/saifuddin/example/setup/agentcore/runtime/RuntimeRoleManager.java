@@ -15,7 +15,8 @@ public final class RuntimeRoleManager {
         this.configuration = configuration;
     }
 
-    public String createOrUpdate(String gatewayArn) {
+    public String createOrUpdate(String gatewayArn, String inferenceProfileArn,
+                                 String sourceInferenceProfileArn) {
         try {
             iam.createRole(request -> request
                     .roleName(configuration.roleName())
@@ -30,7 +31,8 @@ public final class RuntimeRoleManager {
         iam.putRolePolicy(request -> request
                 .roleName(configuration.roleName())
                 .policyName(POLICY_NAME)
-                .policyDocument(runtimePolicy(gatewayArn)));
+                .policyDocument(runtimePolicy(gatewayArn, inferenceProfileArn,
+                        sourceInferenceProfileArn)));
         return iam.getRole(request -> request.roleName(configuration.roleName())).role().arn();
     }
 
@@ -52,7 +54,8 @@ public final class RuntimeRoleManager {
                 """.formatted(configuration.accountId(), configuration.region().id());
     }
 
-    private String runtimePolicy(String gatewayArn) {
+    private String runtimePolicy(String gatewayArn, String inferenceProfileArn,
+                                 String sourceInferenceProfileArn) {
         String region = configuration.region().id();
         String accountId = configuration.accountId();
         return """
@@ -106,24 +109,24 @@ public final class RuntimeRoleManager {
                       "Sid":"InvokeNovaInferenceProfile",
                       "Effect":"Allow",
                       "Action":["bedrock:InvokeModel","bedrock:InvokeModelWithResponseStream"],
-                      "Resource":"arn:aws:bedrock:%1$s:%2$s:inference-profile/%4$s"
+                      "Resource":["%4$s","%5$s"]
                     },
                     {
                       "Sid":"InvokeNovaFoundationModelsThroughProfile",
                       "Effect":"Allow",
                       "Action":["bedrock:InvokeModel","bedrock:InvokeModelWithResponseStream"],
-                      "Resource":"arn:aws:bedrock:*::foundation-model/%5$s",
-                      "Condition":{"StringLike":{"bedrock:InferenceProfileArn":"arn:aws:bedrock:%1$s:%2$s:inference-profile/%4$s"}}
+                      "Resource":"arn:aws:bedrock:*::foundation-model/%6$s",
+                      "Condition":{"StringLike":{"bedrock:InferenceProfileArn":["%4$s","%5$s"]}}
                     },
                     {
                       "Sid":"InvokePetStoreGateway",
                       "Effect":"Allow",
                       "Action":"bedrock-agentcore:InvokeGateway",
-                      "Resource":"%6$s"
+                      "Resource":"%7$s"
                     }
                   ]
                 }
                 """.formatted(region, accountId, configuration.repositoryName(),
-                configuration.bedrockModelId(), configuration.foundationModelId(), gatewayArn);
+                inferenceProfileArn, sourceInferenceProfileArn, configuration.foundationModelId(), gatewayArn);
     }
 }

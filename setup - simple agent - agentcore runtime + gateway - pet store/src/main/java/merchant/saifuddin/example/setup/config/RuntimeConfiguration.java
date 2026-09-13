@@ -8,7 +8,9 @@ import java.time.Duration;
 import java.util.Properties;
 
 public record RuntimeConfiguration(Region region, String runtimeName, String roleName,
-                                   String containerUri, String bedrockModelId,
+                                   String containerUri, String inferenceProfileName,
+                                   String inferenceProfileDescription, String inferenceProfileSourceId,
+                                   String inferenceProfileTagKey, String inferenceProfileTagValue,
                                    Duration idleSessionTimeout, Duration maxLifetime,
                                    Duration waitTimeout) {
     public static RuntimeConfiguration load() {
@@ -27,7 +29,11 @@ public record RuntimeConfiguration(Region region, String runtimeName, String rol
                 required(properties, "agentcore.runtime.name"),
                 required(properties, "agentcore.runtime.role-name"),
                 required(properties, "agentcore.runtime.container-uri"),
-                required(properties, "agentcore.runtime.bedrock-model-id"),
+                required(properties, "agentcore.runtime.inference-profile.name"),
+                required(properties, "agentcore.runtime.inference-profile.description"),
+                required(properties, "agentcore.runtime.inference-profile.source-id"),
+                required(properties, "agentcore.runtime.inference-profile.tag.key"),
+                required(properties, "agentcore.runtime.inference-profile.tag.value"),
                 Duration.ofSeconds(Long.parseLong(required(properties,
                         "agentcore.runtime.idle-session-timeout-seconds"))),
                 Duration.ofSeconds(Long.parseLong(required(properties,
@@ -47,7 +53,9 @@ public record RuntimeConfiguration(Region region, String runtimeName, String rol
     }
 
     public String foundationModelId() {
-        return bedrockModelId.startsWith("us.") ? bedrockModelId.substring(3) : bedrockModelId;
+        return inferenceProfileSourceId.startsWith("us.")
+                ? inferenceProfileSourceId.substring(3)
+                : inferenceProfileSourceId;
     }
 
     private static String required(Properties properties, String key) {

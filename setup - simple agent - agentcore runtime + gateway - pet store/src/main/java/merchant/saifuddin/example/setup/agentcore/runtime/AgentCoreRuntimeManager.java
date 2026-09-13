@@ -19,7 +19,7 @@ public final class AgentCoreRuntimeManager {
         this.configuration = configuration;
     }
 
-    public RuntimeResult createOrUpdate(String roleArn, String gatewayUrl) {
+    public RuntimeResult createOrUpdate(String roleArn, String gatewayUrl, String inferenceProfileArn) {
         var existing = findRuntime();
         String runtimeId;
         if (existing == null) {
@@ -31,7 +31,7 @@ public final class AgentCoreRuntimeManager {
                     .networkConfiguration(network -> network.networkMode("PUBLIC"))
                     .protocolConfiguration(protocol -> protocol.serverProtocol("HTTP"))
                     .lifecycleConfiguration(this::configureLifecycle)
-                    .environmentVariables(environment(gatewayUrl))
+                    .environmentVariables(environment(gatewayUrl, inferenceProfileArn))
                     .build()).agentRuntimeId();
             waitForRuntime(runtimeId);
         } else {
@@ -48,7 +48,7 @@ public final class AgentCoreRuntimeManager {
                 .protocolConfiguration(protocol -> protocol.serverProtocol("HTTP"))
                 .lifecycleConfiguration(this::configureLifecycle)
                 .metadataConfiguration(metadata -> metadata.requireMMDSV2(true))
-                .environmentVariables(environment(gatewayUrl))
+                .environmentVariables(environment(gatewayUrl, inferenceProfileArn))
                 .build());
 
         var runtime = waitForRuntime(runtimeId);
@@ -62,9 +62,9 @@ public final class AgentCoreRuntimeManager {
                 .build();
     }
 
-    private Map<String, String> environment(String gatewayUrl) {
+    private Map<String, String> environment(String gatewayUrl, String inferenceProfileArn) {
         return Map.of(
-                "BEDROCK_MODEL_ID", configuration.bedrockModelId(),
+                "BEDROCK_MODEL_ID", inferenceProfileArn,
                 "PET_STORE_GATEWAY_URL", gatewayUrl);
     }
 

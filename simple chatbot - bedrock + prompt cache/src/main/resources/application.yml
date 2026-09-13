@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: prompt-cache-demo
+  ai:
+    model:
+      chat: bedrock-converse
+    bedrock:
+      aws:
+        region: ${AWS_REGION:us-east-1}
+      converse:
+        chat:
+          model: ${BEDROCK_MODEL_ID:amazon.nova-lite-v1:0}
+          max-tokens: ${BEDROCK_MAX_TOKENS:4000}
+          temperature: ${BEDROCK_TEMPERATURE:0.2}
+
+prompt-cache:
+    model-id: ${BEDROCK_MODEL_ID:amazon.nova-lite-v1:0}
+    max-tokens: ${BEDROCK_MAX_TOKENS:4000}
+    temperature: ${BEDROCK_TEMPERATURE:0.2}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

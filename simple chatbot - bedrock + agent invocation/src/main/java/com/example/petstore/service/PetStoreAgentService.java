@@ -1,20 +1,18 @@
 package com.example.petstore.service;
 
 import com.example.petstore.config.PetStoreAgentProperties;
-import java.util.UUID;
-
 import com.example.petstore.dto.AgentPrompt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.bedrockagentcore.BedrockAgentCoreClient;
 import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntimeRequest;
-import software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntimeResponse;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
