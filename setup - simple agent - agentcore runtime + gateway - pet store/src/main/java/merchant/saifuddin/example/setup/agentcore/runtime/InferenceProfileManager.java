@@ -4,9 +4,9 @@ import merchant.saifuddin.example.setup.config.RuntimeConfiguration;
 import software.amazon.awssdk.services.bedrock.BedrockClient;
 import software.amazon.awssdk.services.bedrock.model.CreateInferenceProfileRequest;
 import software.amazon.awssdk.services.bedrock.model.InferenceProfileModelSource;
+import software.amazon.awssdk.services.bedrock.model.InferenceProfileType;
 import software.amazon.awssdk.services.bedrock.model.ListInferenceProfilesRequest;
 import software.amazon.awssdk.services.bedrock.model.Tag;
-import software.amazon.awssdk.services.bedrock.model.TagResourceRequest;
 
 import java.util.List;
 
@@ -19,11 +19,11 @@ public final class InferenceProfileManager {
         this.configuration = configuration;
     }
 
-    public InferenceProfiles createOrUpdate() {
+    public InferenceProfiles findOrCreate() {
+        String inferenceProfileArn = findApplicationInferenceProfileArn();
         String sourceProfileArn = bedrock.getInferenceProfile(request -> request
                 .inferenceProfileIdentifier(configuration.inferenceProfileSourceId()))
                 .inferenceProfileArn();
-        String inferenceProfileArn = findInferenceProfileArn();
         if (inferenceProfileArn == null) {
             inferenceProfileArn = bedrock.createInferenceProfile(CreateInferenceProfileRequest.builder()
                     .inferenceProfileName(configuration.inferenceProfileName())
@@ -34,19 +34,16 @@ public final class InferenceProfileManager {
                     .inferenceProfileArn();
         }
 
-        bedrock.tagResource(TagResourceRequest.builder()
-                .resourceARN(inferenceProfileArn)
-                .tags(tag())
-                .build());
         return new InferenceProfiles(inferenceProfileArn, sourceProfileArn);
     }
 
-    private String findInferenceProfileArn() {
+    private String findApplicationInferenceProfileArn() {
         String nextToken = null;
         do {
             var response = bedrock.listInferenceProfiles(ListInferenceProfilesRequest.builder()
                     .maxResults(1000)
                     .nextToken(nextToken)
+                    .typeEquals(InferenceProfileType.APPLICATION)
                     .build());
             var match = response.inferenceProfileSummaries().stream()
                     .filter(profile -> configuration.inferenceProfileName()

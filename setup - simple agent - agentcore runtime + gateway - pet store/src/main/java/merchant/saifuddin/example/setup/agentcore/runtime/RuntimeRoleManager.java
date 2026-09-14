@@ -119,6 +119,15 @@ public final class RuntimeRoleManager {
                       "Condition":{"StringLike":{"bedrock:InferenceProfileArn":["%4$s","%5$s"]}}
                     },
                     {
+                      "Sid":"ApplyAccountGuardrails",
+                      "Effect":"Allow",
+                      "Action":"bedrock:ApplyGuardrail",
+                      "Resource":[
+                        "arn:aws:bedrock:*:%2$s:guardrail/*",
+                        "arn:aws:bedrock:*:%2$s:guardrail-profile/*"
+                      ]
+                    },
+                    {
                       "Sid":"InvokePetStoreGateway",
                       "Effect":"Allow",
                       "Action":"bedrock-agentcore:InvokeGateway",

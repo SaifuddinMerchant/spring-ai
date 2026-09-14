@@ -29,7 +29,7 @@ public final class PetStoreGatewaySetup {
             System.out.printf("Gateway ready: %s (%s)%n", gateway.gatewayUrl(), gateway.gatewayId());
 
             var inferenceProfiles = new InferenceProfileManager(bedrock, runtimeConfiguration)
-                    .createOrUpdate();
+                    .findOrCreate();
             var runtimeRoleManager = new RuntimeRoleManager(iam, runtimeConfiguration);
             String runtimeRoleArn = runtimeRoleManager.createOrUpdate(
                     gateway.gatewayArn(), inferenceProfiles.applicationProfileArn(),
